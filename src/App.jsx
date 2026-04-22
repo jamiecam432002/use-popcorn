@@ -1,7 +1,12 @@
 import { useState } from 'react';
-import Nav from './components/Nav';
-import WatchedBox from './components/WatchedBox';
-import ListBox from './components/ListBox';
+import NavBar from './components/NavBar';
+import Logo from './components/Logo';
+import NumResults from './components/NumResults';
+import Search from './components/Search';
+import MoviesList from './components/MoviesList';
+import Box from './components/Box';
+import WatchedSummary from './components/WatchedSummary';
+import WatchedMoviesList from './components/WatchedMoviesList';
 
 export const tempMovieData = [
 	{
@@ -24,6 +29,13 @@ export const tempMovieData = [
 		Year: '2019',
 		Poster:
 			'https://m.media-amazon.com/images/M/MV5BYWZjMjk3ZTItODQ2ZC00NTY5LWE0ZDYtZTI3MjcwN2Q5NTVkXkEyXkFqcGdeQXVyODk4OTc3MTY@._V1_SX300.jpg',
+	},
+	{
+		imdbID: 'tt1375668',
+		Title: 'Contraception',
+		Year: '2013',
+		Poster:
+			'https://m.media-amazon.com/images/M/MV5BMjAxMzY3NjcxNF5BMl5BanBnXkFtZTcwNTI5OTM0Mw@@._V1_SX300.jpg',
 	},
 ];
 
@@ -56,10 +68,19 @@ export default function App() {
 
 	return (
 		<>
-			<Nav movies={movies} />
+			<NavBar>
+				<Logo />
+				<Search />
+				<NumResults movies={movies} />
+			</NavBar>
 			<main className='main'>
-				<ListBox movies={movies} />
-				<WatchedBox watched={watched} movies={movies} />
+				<Box>
+					<MoviesList movies={movies} />
+				</Box>
+				<Box>
+					<WatchedSummary watched={watched} />
+					<WatchedMoviesList watched={watched} />
+				</Box>
 			</main>
 		</>
 	);
