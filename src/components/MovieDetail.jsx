@@ -3,9 +3,17 @@ import { KEY } from '../App';
 import StarRating from './StarRating';
 import Loader from './Loader';
 
-export default function MovieDetail({ id, onCloseMovie }) {
+export default function MovieDetail({
+	id,
+	watched,
+	onCloseMovie,
+	onAddWatched,
+}) {
 	const [movie, setMovie] = useState({});
 	const [isLoading, setIsLoading] = useState(false);
+	const [userRating, setUserRating] = useState('');
+	const isWatched = watched.map((movie) => movie.imdbId).includes(id);
+	const yourRating = watched.find((movie) => movie.imdbId === id)?.userRating;
 
 	const {
 		Title: title,
@@ -18,6 +26,30 @@ export default function MovieDetail({ id, onCloseMovie }) {
 		Director: director,
 		Genre: genre,
 	} = movie;
+
+	function handleAdd() {
+		const newMovie = {
+			imdbId: id,
+			title,
+			released,
+			poster,
+			runtime: Number(runtime.split(' ')[0]),
+			imdbRating: Number(imdbRating),
+			userRating,
+		};
+		onAddWatched(newMovie);
+		onCloseMovie();
+	}
+
+	useEffect(
+		function () {
+			if (!title) return;
+			document.title = `Movie | ${title}`;
+
+			return () => (document.title = 'usePopcorn');
+		},
+		[title],
+	);
 
 	useEffect(
 		function () {
@@ -64,7 +96,25 @@ export default function MovieDetail({ id, onCloseMovie }) {
 					</header>
 					<section>
 						<div className='rating'>
-							<StarRating maxRating={10} size={24} />
+							{!isWatched ? (
+								<>
+									<StarRating
+										maxRating={10}
+										size={24}
+										onSetRating={setUserRating}
+									/>
+									{userRating > 0 && (
+										<button className='btn-add' onClick={handleAdd}>
+											Add to list
+										</button>
+									)}
+								</>
+							) : (
+								<p>
+									You already gave this movie a rating of {yourRating}{' '}
+									<span>⭐️</span>
+								</p>
+							)}
 						</div>
 
 						<p>

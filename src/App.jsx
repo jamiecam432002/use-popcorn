@@ -21,6 +21,21 @@ export default function App() {
 	const [query, setQuery] = useState('interstellar');
 	const [error, setError] = useState('');
 
+	function handleSelectedMovie(id) {
+		setSelectedId(id === selectedId ? null : id);
+	}
+
+	function handleCloseMovie() {
+		setSelectedId(null);
+	}
+
+	function handleAddWatched(movie) {
+		setWatched((s) => [...s, movie]);
+	}
+	function handleDeleteMovie(id) {
+		setWatched((watched) => watched.filter((movie) => movie.imdbId !== id));
+	}
+
 	useEffect(
 		function () {
 			const getMovies = async function () {
@@ -41,7 +56,6 @@ export default function App() {
 							'We could not find any movies that matched your search',
 						);
 					setMovies(data.Search);
-					console.log(data);
 				} catch (err) {
 					setError(err.message);
 				} finally {
@@ -60,14 +74,6 @@ export default function App() {
 		[query],
 	);
 
-	function handleSelectedMovie(id) {
-		setSelectedId(id === selectedId ? null : id);
-	}
-
-	function handleCloseMovie() {
-		setSelectedId(null);
-	}
-
 	return (
 		<>
 			<NavBar>
@@ -85,11 +91,19 @@ export default function App() {
 				</Box>
 				<Box>
 					{selectedId ? (
-						<MovieDetail id={selectedId} onCloseMovie={handleCloseMovie} />
+						<MovieDetail
+							id={selectedId}
+							watched={watched}
+							onCloseMovie={handleCloseMovie}
+							onAddWatched={handleAddWatched}
+						/>
 					) : (
 						<>
 							<WatchedSummary watched={watched} />
-							<WatchedMoviesList watched={watched} />
+							<WatchedMoviesList
+								watched={watched}
+								onDeleteMovie={handleDeleteMovie}
+							/>
 						</>
 					)}
 				</Box>
