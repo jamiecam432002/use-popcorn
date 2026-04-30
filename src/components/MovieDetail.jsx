@@ -43,6 +43,23 @@ export default function MovieDetail({
 
 	useEffect(
 		function () {
+			const escapeListener = function (e) {
+				if (e.code === 'Escape') {
+					onCloseMovie();
+					console.log('closing');
+				}
+			};
+			document.addEventListener('keydown', escapeListener);
+
+			return function () {
+				document.removeEventListener('keydown', escapeListener);
+			};
+		},
+		[onCloseMovie],
+	);
+
+	useEffect(
+		function () {
 			if (!title) return;
 			document.title = `Movie | ${title}`;
 

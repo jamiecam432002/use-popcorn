@@ -18,7 +18,7 @@ export default function App() {
 	const [watched, setWatched] = useState([]);
 	const [selectedId, setSelectedId] = useState(null);
 	const [isLoading, setIsLoading] = useState(false);
-	const [query, setQuery] = useState('interstellar');
+	const [query, setQuery] = useState('');
 	const [error, setError] = useState('');
 
 	function handleSelectedMovie(id) {
@@ -38,12 +38,14 @@ export default function App() {
 
 	useEffect(
 		function () {
+			const controller = new AbortController();
 			const getMovies = async function () {
 				try {
-					setError(false);
+					setError('');
 					setIsLoading('');
 					const res = await fetch(
 						`https://www.omdbapi.com/?apikey=${KEY}&s=${query}`,
+						{ signal: controller.signal },
 					);
 
 					if (!res.ok)
@@ -56,8 +58,11 @@ export default function App() {
 							'We could not find any movies that matched your search',
 						);
 					setMovies(data.Search);
+					setError('');
 				} catch (err) {
-					setError(err.message);
+					if (err.name !== 'AbortError') {
+						setError(err.message);
+					}
 				} finally {
 					setIsLoading(false);
 				}
@@ -69,7 +74,12 @@ export default function App() {
 				return;
 			}
 
+			handleCloseMovie();
 			getMovies();
+
+			return function () {
+				controller.abort();
+			};
 		},
 		[query],
 	);
